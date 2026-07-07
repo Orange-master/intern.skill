@@ -1,0 +1,34 @@
+{
+  "journal_dir": "~/.实习生-skill",
+  "role": {
+    "preset": "general",
+    "title": "实习生"
+  },
+  "schedule": {
+    "work_end": "19:00",
+    "collect_before_minutes": 30
+  },
+  "sources": {
+    "claude": {"enabled": true, "roots": ["~/.claude/projects"]},
+    "codex": {"enabled": true, "roots": ["~/.codex/sessions"]},
+    "cursor": {"enabled": false, "roots": ["~/.cursor/projects"]}
+  },
+  "feishu": {
+    "enabled": true,
+    "identity": "user",
+    "timezone": "Asia/Shanghai",
+    "lookback_days": 7,
+    "calendar": {"enabled": true},
+    "tasks": {"enabled": true},
+    "messages": {"enabled": true, "work_only": true, "max_chats": 20},
+    "docs": {"enabled": true, "mine": true, "edited_since": "7d"}
+  },
+  "mentor": {
+    "distill_voice": "intern_first",
+    "align_with_signals": true
+  },
+  "repos": [
+    {"path": "~/Projects/my-app", "label": "My App"}
+  ],
+  "domains": {}
+}

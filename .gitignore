@@ -1,0 +1,23 @@
+# --- Never commit user journal data (lives in ~/.实习生-skill) ---
+config.json
+events.jsonl
+state.json
+RESUME_LOG.md
+daily/
+reports/
+logs/
+mentor/
+
+# Local overrides / secrets
+*.local.json
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*~
