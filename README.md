@@ -67,8 +67,8 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/YOUR_USER/实习生.skill.git
-cd 实习生.skill
+git clone https://github.com/Orange-master/intern.skill.git
+cd intern.skill
 bash scripts/install.sh
 
 # 飞书授权 + 首次采集（只需一次）
@@ -139,7 +139,7 @@ python3 scripts/setup_role.py
 bash scripts/install.sh
 ```
 
-1. 链接 Skill → `~/.claude/skills/`、`~/.codex/skills/`
+1. 链接 Skill → `~/.claude/skills/intern.skill`、`~/.codex/skills/intern.skill`（可选 Cursor）
 2. 创建 `~/.实习生-skill/`
 3. 复制/迁移 `config.json`
 4. macOS 注册定时采集（时间见下方 `schedule`）
@@ -239,7 +239,7 @@ tail -f ~/.实习生-skill/logs/collect.log
 ### 快离职：手动汇总（核心一步）
 
 ```bash
-SKILL=~/Projects/实习生.skill   # 或 ~/.claude/skills/实习生.skill
+SKILL=~/Projects/intern.skill   # 或 ~/.claude/skills/intern.skill
 
 bash $SKILL/scripts/offboard.sh "你的名字"
 ```
@@ -324,7 +324,7 @@ bash $SKILL/scripts/offboard.sh "你的名字"
 ## 项目结构
 
 ```
-实习生.skill/
+intern.skill/
 ├── SKILL.md
 ├── README.md
 ├── config.example.json

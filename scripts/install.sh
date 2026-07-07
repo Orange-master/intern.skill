@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SKILL_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SKILL_NAME="实习生.skill"
+SKILL_NAME="intern.skill"
 JOURNAL="${HOME}/.实习生-skill"
 LEGACY_JOURNAL="${HOME}/.resume-journal"
 PLIST_LABEL="com.intern-skill.collect"
@@ -32,7 +32,7 @@ link_skill() {
   local label="$2"
   mkdir -p "$skills_dir"
   # Retire old names
-  rm -f "${skills_dir}/resume-journal" "${skills_dir}/${SKILL_NAME}"
+  rm -f "${skills_dir}/resume-journal" "${skills_dir}/实习生.skill" "${skills_dir}/${SKILL_NAME}"
   ln -sfn "$SKILL_ROOT" "${skills_dir}/${SKILL_NAME}"
   echo "  ${label} → ${skills_dir}/${SKILL_NAME}"
 }
@@ -163,7 +163,7 @@ else
 fi
 
 echo ""
-echo "Installed ${SKILL_NAME}"
+echo "Installed ${SKILL_NAME} (实习生.skill)"
 echo "  data → $JOURNAL"
 echo ""
 
