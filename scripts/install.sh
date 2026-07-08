@@ -18,12 +18,14 @@ if [[ -d "$LEGACY_JOURNAL" && ! -e "$JOURNAL" ]]; then
   echo "Linked $JOURNAL → $LEGACY_JOURNAL (legacy data)"
 fi
 
-mkdir -p "$JOURNAL/daily" "$JOURNAL/logs" "$JOURNAL/reports" \
+mkdir -p "$JOURNAL/daily" "$JOURNAL/logs" "$JOURNAL/reports/daily" "$JOURNAL/reports/weekly" \
   "$JOURNAL/mentor/raw" "$JOURNAL/mentor/inbox/done"
 
 chmod +x "$SKILL_ROOT/scripts/collect.py" "$SKILL_ROOT/scripts/install.sh" \
   "$SKILL_ROOT/scripts/lark_collect.py" "$SKILL_ROOT/scripts/summarize.py" \
-  "$SKILL_ROOT/scripts/mentor.py" "$SKILL_ROOT/scripts/today.sh" \
+  "$SKILL_ROOT/scripts/report.py" "$SKILL_ROOT/scripts/mentor.py" \
+  "$SKILL_ROOT/scripts/today.sh" "$SKILL_ROOT/scripts/daily_report.sh" \
+  "$SKILL_ROOT/scripts/weekly_report.sh" \
   "$SKILL_ROOT/scripts/setup-feishu.sh" "$SKILL_ROOT/scripts/offboard.sh" \
   "$SKILL_ROOT/scripts/setup_role.py" "$SKILL_ROOT/scripts/schedule.py" 2>/dev/null || true
 

@@ -1,13 +1,16 @@
-# 实习生.skill
+# resume-journal（实习生.skill）
 
-把实习期间散落的真实工作记录——**飞书协作**、**Agent 会话**、**Git 提交**——自动沉淀成能写进简历的素材。
+把实习期间散落的真实工作记录——**飞书协作**、**Agent 会话**、**Git 提交**——自动沉淀成能写进简历的素材；并支持生成**日报 / 周报**、一键发布到**飞书文档**。
+
+> 仓库名 `resume-journal`，Skill 包名 `intern.skill`，数据目录默认 `~/.实习生-skill/`（旧路径 `~/.resume-journal` 安装时会自动软链）。
 
 实习生的日常分散在三处：飞书里开会、对齐、写文档、勾任务；Claude Code / Codex 里用 Agent 写代码、改需求、解决问题；Git 里提交交付。
 
-本项目做两件事：
+本项目做三件事：
 
 1. **自动记录** — 每天后台采集飞书 + Agent + Git，写入 `daily/` 和 `events.jsonl`，你不用管
-2. **手动汇总** — 快离职时你自己触发，把整段实习收成标准简历三节
+2. **日报 / 周报** — 按需生成结构化工作汇报，可选发布飞书文档
+3. **手动汇总** — 快离职时你自己触发，把整段实习收成标准简历三节
 
 全程本地运行，不上传云端，不需要 API Key。
 
@@ -18,9 +21,10 @@
 | 环节 | 触发方式 | 产出 |
 |------|----------|------|
 | **每日记录** | **自动**（下班前 + 登录时补采） | `daily/YYYY-MM-DD.md`、`events.jsonl` |
+| **日报 / 周报** | **手动**（下班或周五跑一条命令） | `reports/daily/`、`reports/weekly/`；可选飞书文档 |
 | **汇总 / 写简历** | **手动**（快离职时你跑一条命令） | `reports/intern-*.md` → Agent 精炼 → `RESUME_LOG.md` |
 
-实习期间只需偶尔扫一眼 `daily/` 确认采集正常；**不用每周跑汇总**。
+实习期间只需偶尔扫一眼 `daily/` 确认采集正常；需要汇报时跑日报/周报即可。
 
 ---
 
@@ -31,11 +35,24 @@
 | **飞书协作（核心）** | 日程、已完成任务、工作群消息、你编辑的文档 — 还原「今天干了什么」 |
 | **会话采集** | Claude Code、Codex（可选 Cursor）本地会话，提取技术协作线索 |
 | **Git 追踪** | 配置仓库里的 commit，作为可验证的交付证据 |
+| **日报 / 周报** | `report.py` 从采集信号生成结构化汇报，支持 `--publish-feishu` 创建飞书文档 |
 | **Mentor 蒸馏** | 导入导师文档，离职汇总时改写成第一人称简历素材 |
 | **离职汇总** | `offboard.sh` / `summarize.py` 手动触发，生成整段实习简历草稿 |
 | **简历素材库** | 精炼结果写入 `RESUME_LOG.md`，最终只取 **职责 / 产出 / 项目经历** |
 
-**不能做的：** 不会自动读 Agent 改了哪些文件；不会自动每周帮你写简历；不会编造你没做过的事。
+**不能做的：** 不会自动读 Agent 改了哪些文件；不会自动定时生成日报/周报（需手动触发）；不会编造你没做过的事。
+
+---
+
+## 日报 / 周报输出格式
+
+日常汇报由 `report.py` 生成，与简历三节结构不同：
+
+**日报**：今日完成 · 会议与协作 · 代码与交付 · Agent 协作摘要 · 文档沉淀 · 明日计划 · 风险与阻塞
+
+**周报**：本周概览 · 关键产出 · 会议与协作 · 代码与交付 · 文档沉淀 · 每日摘要 · 下周计划 · 风险与阻塞
+
+本地 Markdown 默认写入 `reports/daily/`、`reports/weekly/`；加 `--publish-feishu` 时同步创建飞书 Docx。
 
 ---
 
@@ -67,11 +84,11 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/Orange-master/intern.skill.git
-cd intern.skill
+git clone https://github.com/Orange-master/intern.skill.git resume-journal
+cd resume-journal
 bash scripts/install.sh
 
-# 飞书授权 + 首次采集（只需一次）
+# 飞书授权 + 首次采集（只需一次，含文档创建权限）
 bash scripts/setup-feishu.sh
 ```
 
@@ -92,7 +109,13 @@ python3 scripts/setup_role.py
   ─────────────────────
   collect.py（下班前 30 分钟，可配置）
     → events.jsonl + daily/YYYY-MM-DD.md
-    你看 daily/ 即可，无需汇总
+    你看 daily/ 即可
+
+  需要汇报时（手动）
+  ─────────────────────
+  report.py daily / weekly [--publish-feishu]
+    → reports/daily/ 或 reports/weekly/
+    可选 → 飞书 Docx
 
   快离职时（手动，一次）
   ─────────────────────
@@ -106,17 +129,18 @@ python3 scripts/setup_role.py
 │  采集层（自动）collect.py                                    │
 │  飞书 + Agent + Git → events.jsonl + daily/                  │
 └──────────────────────────┬──────────────────────────────────┘
-                           │ 实习期间只累积，不汇总
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  汇总层（手动）summarize.py / offboard.sh                    │
-│  用户离职前触发 → reports/intern-*.md                        │
-└──────────────────────────┬──────────────────────────────────┘
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  精炼层（手动）Claude Code / Codex + SKILL.md                │
-│  输出职责 / 产出 / 项目经历三节                              │
-└─────────────────────────────────────────────────────────────┘
+                           │
+           ┌───────────────┴───────────────┐
+           ▼                               ▼
+┌──────────────────────────┐   ┌──────────────────────────────┐
+│  汇报层（手动）report.py   │   │  汇总层（手动）summarize.py   │
+│  日报/周报 → reports/     │   │  离职触发 → intern-*.md       │
+│  可选发布飞书 Docx        │   └──────────────┬───────────────┘
+└──────────────────────────┘                  ▼
+                           ┌──────────────────────────────────┐
+                           │  精炼层（手动）Agent + SKILL.md   │
+                           │  输出职责 / 产出 / 项目经历三节   │
+                           └──────────────────────────────────┘
 ```
 
 ---
@@ -125,8 +149,8 @@ python3 scripts/setup_role.py
 
 | 依赖 | 用途 |
 |------|------|
-| **Python 3** | 采集/汇总脚本（标准库） |
-| **lark-cli** | 飞书采集（核心，一次性授权） |
+| **Python 3** | 采集/汇总/汇报脚本（标准库） |
+| **lark-cli** | 飞书采集 + 文档创建（一次性授权） |
 | **Claude Code** 和/或 **Codex** | 离职时精炼简历 |
 | **Git** | 追踪 commit |
 | **macOS**（可选） | 按 `schedule.work_end` 定时自动采集 |
@@ -161,6 +185,7 @@ INSTALL_CRON=0 bash scripts/install.sh    # 不要定时任务
 
 ```json
 {
+  "journal_dir": "~/.实习生-skill",
   "role": {
     "preset": "frontend",
     "title": "前端开发实习生"
@@ -178,6 +203,14 @@ INSTALL_CRON=0 bash scripts/install.sh    # 不要定时任务
     "tasks": {"enabled": true},
     "messages": {"enabled": true, "work_only": true},
     "docs": {"enabled": true, "mine": true}
+  },
+  "reports": {
+    "subject": "张三",
+    "feishu": {
+      "identity": "user",
+      "parent_token": "",
+      "parent_position": "my_library"
+    }
   }
 }
 ```
@@ -186,10 +219,12 @@ INSTALL_CRON=0 bash scripts/install.sh    # 不要定时任务
 
 | 配置块 | 作用 |
 |--------|------|
+| `journal_dir` | 数据目录，默认 `~/.实习生-skill` |
 | `schedule` | 下班时间；系统在下班前 30 分钟采集 |
-| `role` | 岗位，影响采集侧重点 |
+| `role` | 岗位，影响采集侧重点与报告署名 |
 | `repos` | 追踪 commit（**必填**） |
 | `feishu.*` | 飞书日程/任务/消息/文档（默认开） |
+| `reports.*` | 日报/周报署名与飞书文档存放位置 |
 | `sources.*` | Claude / Codex / Cursor 会话开关 |
 | `domains` | 可选，补充岗位关键词 |
 
@@ -230,6 +265,68 @@ bash scripts/today.sh
 
 不需要跑 `summarize.py`。
 
+### 生成日报 / 周报（本地 + 飞书）
+
+先确保飞书已授权（含文档创建权限）：
+
+```bash
+bash scripts/setup-feishu.sh
+```
+
+**今日日报**（本地 Markdown）：
+
+```bash
+bash scripts/daily_report.sh
+# 或
+python3 scripts/report.py daily --collect-first
+```
+
+**发布到飞书文档**：
+
+```bash
+PUBLISH=1 bash scripts/daily_report.sh
+# 或
+python3 scripts/report.py daily --collect-first --publish-feishu
+```
+
+**本周周报**（以当天所在周为准，文件名取周一日期）：
+
+```bash
+bash scripts/weekly_report.sh
+PUBLISH=1 bash scripts/weekly_report.sh   # 同时发布飞书
+```
+
+**指定日期 / 署名**：
+
+```bash
+DATE=2026-07-01 SUBJECT=张三 bash scripts/daily_report.sh
+python3 scripts/report.py weekly --date 2026-07-08 --subject 张三
+```
+
+**Shell 环境变量**（`daily_report.sh` / `weekly_report.sh` 通用）：
+
+| 变量 | 默认 | 说明 |
+|------|------|------|
+| `JOURNAL` | `~/.实习生-skill` | 数据目录 |
+| `DATE` | 今天 | 锚定日期 `YYYY-MM-DD` |
+| `SUBJECT` | config 中的岗位/署名 | 报告标题署名 |
+| `COLLECT` | `1` | 生成前先跑 `collect.py` |
+| `PUBLISH` | `0` | 设为 `1` 时发布飞书文档 |
+
+**`report.py` 常用参数**：
+
+```bash
+python3 scripts/report.py daily|weekly [--date YYYY-MM-DD] [--subject 名字]
+  [--collect-first] [--publish-feishu] [--output /path/to/out.md] [--no-save]
+```
+
+产出路径：
+
+- `~/.实习生-skill/reports/daily/daily-YYYY-MM-DD.md`
+- `~/.实习生-skill/reports/weekly/weekly-YYYY-MM-DD.md`（周一日期）
+
+飞书文档存放位置见上文「配置」中的 `reports.feishu`（`parent_token` 优先，否则 `my_library`）。
+
 ### 实习期间：确认自动采集正常
 
 ```bash
@@ -239,7 +336,7 @@ tail -f ~/.实习生-skill/logs/collect.log
 ### 快离职：手动汇总（核心一步）
 
 ```bash
-SKILL=~/Projects/intern.skill   # 或 ~/.claude/skills/intern.skill
+SKILL=~/Projects/resume-journal   # 或 ~/.claude/skills/intern.skill
 
 bash $SKILL/scripts/offboard.sh "你的名字"
 ```
@@ -263,6 +360,7 @@ python3 $SKILL/scripts/summarize.py --days 90 --subject "你的名字" --mentor
 | 你说 | Agent 做 |
 |------|----------|
 | 「今天干了什么」 | 读 `daily/`，复述，**不汇总** |
+| 「写日报 / 周报 / 发飞书汇报」 | 跑 `report.py daily/weekly`，可选 `--publish-feishu` |
 | 「写简历 / 离职汇总」 | 跑 `offboard.sh` 或 `summarize.py`，按三节输出 |
 | 「蒸馏 mentor 文档」 | `mentor.py add` → 离职汇总时 `--mentor` 合并 |
 
@@ -293,7 +391,9 @@ bash $SKILL/scripts/offboard.sh "你的名字"
 ├── state.json           # 增量游标
 ├── daily/               # ★ 每日摘要（自动，实习期间看这个）
 ├── RESUME_LOG.md        # 简历素材库（离职汇总后由 Agent 写入）
-├── reports/             # intern-*.md（手动 summarize 产出）
+├── reports/             # daily/ weekly/ intern-*.md
+│   ├── daily/
+│   └── weekly/
 ├── mentor/
 └── logs/                # collect 定时任务日志
 ```
@@ -315,8 +415,10 @@ bash $SKILL/scripts/offboard.sh "你的名字"
 
 | 时机 | 做什么 |
 |------|--------|
-| **安装后** | `setup_role.py` → `setup-feishu.sh`，配好 `repos` |
-| **实习期间** | 不用管；偶尔 `cat daily/今天.md` 确认采集正常 |
+| **安装后** | `setup_role.py` → `setup-feishu.sh`，配好 `repos` 和 `reports.subject` |
+| **实习期间** | 自动采集；偶尔 `cat daily/今天.md` 确认正常 |
+| **每天下班** | `bash scripts/daily_report.sh` 或 `PUBLISH=1` 发飞书 |
+| **每周五** | `bash scripts/weekly_report.sh` |
 | **快离职** | `offboard.sh 你的名字` → Agent 写三节简历 |
 
 ---
@@ -324,19 +426,22 @@ bash $SKILL/scripts/offboard.sh "你的名字"
 ## 项目结构
 
 ```
-intern.skill/
+resume-journal/          # 即 GitHub intern.skill 仓库
 ├── SKILL.md
 ├── README.md
 ├── config.example.json
 └── scripts/
-    ├── install.sh          # 安装；仅注册 collect 定时任务
-    ├── setup-feishu.sh     # 飞书授权
+    ├── install.sh          # 安装；注册 collect 定时任务
+    ├── setup-feishu.sh     # 飞书授权（含 docx:document 写权限）
     ├── setup_role.py       # ★ 配置岗位 preset
     ├── today.sh            # 手动查看今日 daily
+    ├── daily_report.sh     # ★ 生成日报（PUBLISH=1 发飞书）
+    ├── weekly_report.sh    # ★ 生成周报
+    ├── report.py           # 日报/周报核心逻辑
     ├── offboard.sh         # ★ 离职前手动汇总
     ├── schedule.py         # 计算采集时间
     ├── collect.py          # 自动采集
-    ├── summarize.py        # 汇总（手动）
+    ├── summarize.py        # 简历汇总（手动）
     ├── mentor.py
     ├── lark_collect.py
     └── mentor_distill.py
@@ -360,6 +465,12 @@ intern.skill/
 
 **Q：能每周自动 summarize 吗？**  
 设计上不支持，也不建议。信号在 `events.jsonl` 里累积，离职一次汇总即可。
+
+**Q：日报/周报和简历汇总有啥区别？**  
+日报/周报（`report.py`）面向日常汇报，结构含「今日完成 / 明日计划」等；简历汇总（`summarize.py`）面向离职，只产出职责/产出/项目经历三节。两者可独立使用。
+
+**Q：飞书文档发布失败？**  
+重新运行 `bash scripts/setup-feishu.sh` 确保含 `docx:document` 写权限；检查 `config.json → reports.feishu.parent_token` 是否有写入权限的文件夹。
 
 **Q：数据会泄露吗？**  
 不会上传云端，数据只在 `~/.实习生-skill/`。

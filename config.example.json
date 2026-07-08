@@ -30,5 +30,13 @@
   "repos": [
     {"path": "~/Projects/my-app", "label": "My App"}
   ],
+  "reports": {
+    "subject": "工作汇报",
+    "feishu": {
+      "identity": "user",
+      "parent_token": "",
+      "parent_position": "my_library"
+    }
+  },
   "domains": {}
 }
