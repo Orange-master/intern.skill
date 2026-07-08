@@ -147,10 +147,10 @@ python3 scripts/report.py daily   --publish-feishu --no-save   # 只发飞书，
 
 ```bash
 # 从飞书文档导入
-python3 scripts/mentor.py add --project "TikTok GMV 排查" --feishu "https://xxx.feishu.cn/docx/..."
+python3 scripts/mentor.py add --project "xxxxxx" --feishu "https://xxx.feishu.cn/docx/..."
 
 # 从本地文件导入
-python3 scripts/mentor.py add --project "数据平台重构" --file ~/Downloads/design.md
+python3 scripts/mentor.py add --project "xxxxxx" --file ~/Downloads/design.md
 
 # 查看已导入项目
 python3 scripts/mentor.py list
