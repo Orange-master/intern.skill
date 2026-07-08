@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SKILL_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-FEISHU_SCOPE='search:message im:chat:read search:docs:read docx:document:readonly im:message.reactions:read calendar:calendar.event:read task:task:read'
+FEISHU_SCOPE='search:message im:chat:read search:docs:read docx:document:readonly docx:document im:message.reactions:read calendar:calendar.event:read task:task:read'
 
 if ! command -v lark-cli >/dev/null 2>&1; then
   echo "lark-cli not found. Install it first, then re-run:" >&2
