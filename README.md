@@ -9,8 +9,8 @@
 <br />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Python 3](https://img.shields.io/badge/Python-3-standard_library-informational)
-![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey)
+![Python 3](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey.svg)
 
 [快速开始](#快速开始) · [日报周报](#日报--周报) · [导师蒸馏](#导师蒸馏) · [离职汇总](#离职汇总) · [配置](#配置) · [FAQ](#常见问题)
 
