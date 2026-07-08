@@ -1,6 +1,6 @@
 <div align="center">
 
-# resume-journal
+# 实习生.skill
 
 **把飞书协作、Agent 会话、Git 提交，自动沉淀成日报、周报与简历素材。**
 
